@@ -1,4 +1,4 @@
-import React,{useState,useEffect} from 'react';
+import React,{useState,useEffect,useRef} from 'react';
 import MakeCards from './MakeCards';
 
 let key = '9b75cc4160800cc67e8dc36b5e621a7b';
@@ -22,14 +22,16 @@ function GetCards(props){
     })
   },[])
 
+
   return (
-    <>
+    <ul>
      {
-       cards.map((element) => {
-         return <MakeCards element={element} key={element['id']} cards={cards} setCards={setCards}/>
+       cards.map((element,index) => {
+         return <MakeCards element={element} key={element['id']} cards={cards} setCards={setCards}
+                 index={index}/>
        })
      }
-    </>
+    </ul>
   )
 }
 export default GetCards;
