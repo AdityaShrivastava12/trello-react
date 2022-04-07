@@ -12,6 +12,7 @@ let idBoard = '6234d5eb4b191b7978887fd6';
 
 export default function App(){
   const [data, setData] = useState([]);
+  const [cards,setCards] = useState([]);
   const [clicked,setClick] = useState(false);
   function clickHandler(){
     setClick(!clicked);
@@ -31,29 +32,97 @@ export default function App(){
         setData(response)
       })
 
+      fetch(`https://api.trello.com/1/boards/${idBoard}/cards?key=${key}&token=${token}`,{
+        method: "GET"
+      })
+      .then((response) => response.json())
+      .then((response) => {
+        // console.log(response);
+        setCards(response);
+      })
+
   },[])
 
-  let array;
-
-  function getCards(arg){
-    array = arg;
+  function apiCall(cardId,listId,cardPos){
+    fetch(`https://api.trello.com/1/cards/${cardId}?key=${key}&token=${token}&idList=${listId}&pos=${cardPos}`, {
+        method: "PUT",
+        headers: {
+          "Accept": "application/json"
+        }
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        console.log(err);
+      })
   }
-
   function handleOnDragEnd(result){
-    console.log(array);
-    // console.log(result);
-    // const items = Array.from(getCards);
-    // const [reorderedItem] = items.splice(result.source.index, 1);
-    // items.splice(result.destination.index, 0, reorderedItem);
-    // let setCards = getSetCards();
-    //
-    // setCards(items);
+    if(!result.destination) return ;
+    const {source,destination} = result;
+    if(source.droppableId !== destination.droppableId){
+      // let sourceColumn = data.filter((elem) => {return elem['id'] === source.droppableId})[0];
+      // let destinationColumn = data.filter((elem) => {return elem['id'] === destination.droppableId})[0];
+      // let sourceItems = cards.filter((elem) => {return elem['idList'] === source.droppableId});
+      // let destinationItems = cards.filter((elem) => {return elem['idList'] === destination.droppableId});
+      // console.log(sourceItems);
+      // console.log(destinationItems);
+      // console.log(source.index);
+      // console.log(destination.index);
+      // let [removed] = sourceItems.splice(source.index,1);
+      // destinationItems.splice(destination.index,0,removed);
+      // removed['idList'] = destination.droppableId;
+      // console.log(sourceItems);
+      // console.log(destinationItems);
+      let items = Array.from(cards);
+      let removed = items.splice(source.index,1)[0];
+      // console.log(removed);
+      removed['idList'] = destination.droppableId
+      source.index < destination.index ? items.splice(destination.index-1,0,removed) : items.splice(destination.index,0,removed);
+      setCards(items);
+      console.log(items);
+      let index = items.indexOf(removed);
+      console.log(index);
+      let prevPos = items[index-1] ? items[index-1]['pos'] : null;
+      let nextPos = items[index+1] ? items[index+1]['pos'] : null;
+      console.log(prevPos,nextPos);
+      console.log(typeof prevPos);
+      let cardPos;
+      if(!prevPos){
+        cardPos = nextPos/2;
+      }
+      else if(!nextPos){
+        cardPos = prevPos * 2;
+      }
+      else{
+        cardPos = (prevPos + nextPos)/2;
+      }
+      apiCall(removed['id'],destination.droppableId,cardPos);
+    }
+    else{
+      const items = Array.from(cards);
+      const reorderedItem = items.splice(result.source.index, 1)[0];
+      items.splice(result.destination.index, 0, reorderedItem);
+      setCards(items);
+      let index = items.indexOf(reorderedItem);
+      let prevPos = items[index-1] ? items[index-1]['pos'] : null;
+      let nextPos = items[index+1] ? items[index+1]['pos'] : null;
+      let cardPos;
+      if(!prevPos){
+        cardPos = nextPos/2;
+      }
+      else if(!nextPos){
+        cardPos = prevPos * 2;
+      }
+      else{
+        cardPos = (prevPos + nextPos)/2;
+      }
+      apiCall(reorderedItem['id'],destination.droppableId,cardPos);
+    }
   }
-
-  // // function handleOnDragEnd(){};
-  // function callBack(result,handleOnDragEnd){
-  //   handleOnDragEnd(result);
-  // }
 
   return(
     <React.StrictMode>
@@ -68,7 +137,8 @@ export default function App(){
             data={data}
             setData={setData}
             index={index}
-            getCards={getCards}
+            cards={cards}
+            setCards = {setCards}
           />
         )
       })

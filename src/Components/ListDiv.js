@@ -10,23 +10,8 @@ let idBoard = '6234d5eb4b191b7978887fd6';
 export const ListContext = React.createContext();
 
 function ListDiv(props){
-  const {idlist,listname,data,setData,index,callBack,getCards} = props;
-  const [cards,setCards] = useState([]);
-  getCards(cards);
-  useEffect(() => {
-    fetch(`https://api.trello.com/1/lists/${idlist}/cards?key=${key}&token=${token}`, {
-      method: "GET",
-      headers: {
-        "Accept": "application/json"
-      }
-    })
-    .then((response) => {
-      return response.json();
-    })
-    .then((data) => {
-      setCards(data);
-    })
-  },[])
+  const {idlist,listname,data,setData,index,cards,setCards} = props;
+
 
   function clickHandler(){
     let updatedData = data.filter((element) => {
@@ -47,15 +32,6 @@ function ListDiv(props){
     })
   }
 
-  function handleOnDragEnd(result){
-    console.log(result);
-    const items = Array.from(cards);
-    const [reorderedItem] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, reorderedItem);
-
-    setCards(items);
-  }
-
   return (
     <div className="list-div" data-idlist={idlist}  data-list-div>
       <div className="heading-and-button">
@@ -74,11 +50,18 @@ function ListDiv(props){
               {
                 cards.map((element,index) => {
                   return (
-                    <Draggable key={element['id']} draggableId={element['id']} index={index}>
-                    {(provided) => {
-                      return <MakeCards element={element} cards={cards} setCards={setCards} provided={provided}/>
-                    }}
-                    </Draggable>
+                    <React.Fragment key={element['id']}>
+                    {
+                      element['idList'] === idlist ?
+                      <Draggable key={element['id']} draggableId={element['id']} index={index}>
+                      {(provided) => {
+                        return <MakeCards key={element['id']} element={element} cards={cards} setCards={setCards} provided={provided}/>
+                      }}
+                      </Draggable>
+                      :
+                      null
+                    }
+                    </React.Fragment>
                   )
                 })
               }

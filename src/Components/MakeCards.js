@@ -40,7 +40,7 @@ function MakeCards({element,cards,setCards,index, handleDragEnter,provided}){
     setCardClick(false);
     setEnter(false);
   }
-  
+
   useEffect(() => {
     async function getDescription(){
       let response = await fetch(`https://api.trello.com/1/cards/${element['id']}?key=${key}&token=${token}&fields=desc`, {
@@ -70,7 +70,6 @@ function MakeCards({element,cards,setCards,index, handleDragEnter,provided}){
         method: "GET"
       })
       let checklistsData = await checklists.json();
-      console.log(checklistsData);
       setCheckListArray(checklistsData);
     }
     getCheckLists();
