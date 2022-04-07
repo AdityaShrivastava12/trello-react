@@ -1,6 +1,6 @@
 import React,{useState,useEffect} from 'react';
 import AddCardFormComponent from './AddCardFormComponent';
-import {DragDropContext,Droppable} from 'react-beautiful-dnd';
+import {Droppable,Draggable} from 'react-beautiful-dnd';
 import MakeCards from './MakeCards';
 
 export let key = '9b75cc4160800cc67e8dc36b5e621a7b';
@@ -10,9 +10,9 @@ let idBoard = '6234d5eb4b191b7978887fd6';
 export const ListContext = React.createContext();
 
 function ListDiv(props){
-  const {idlist,listname,data,setData,index} = props;
+  const {idlist,listname,data,setData,index,callBack,getCards} = props;
   const [cards,setCards] = useState([]);
-
+  getCards(cards);
   useEffect(() => {
     fetch(`https://api.trello.com/1/lists/${idlist}/cards?key=${key}&token=${token}`, {
       method: "GET",
@@ -47,7 +47,6 @@ function ListDiv(props){
     })
   }
 
-
   function handleOnDragEnd(result){
     console.log(result);
     const items = Array.from(cards);
@@ -65,14 +64,29 @@ function ListDiv(props){
       </div>
        <ListContext.Provider value={listname}>
        {
-           <ul className="cards">
-            {
-              cards.map((element,index) => {
-                return <MakeCards element={element} key={element['id']} cards={cards} setCards={setCards}
-                        index={index}/>
-              })
-            }
-           </ul>
+         <Droppable droppableId={idlist} key={idlist}>
+         {(provided) => {
+           return (
+             <ul
+               {...provided.droppableProps}
+               ref={provided.innerRef}
+              >
+              {
+                cards.map((element,index) => {
+                  return (
+                    <Draggable key={element['id']} draggableId={element['id']} index={index}>
+                    {(provided) => {
+                      return <MakeCards element={element} cards={cards} setCards={setCards} provided={provided}/>
+                    }}
+                    </Draggable>
+                  )
+                })
+              }
+              {provided.placeholder}
+             </ul>
+           )
+         }}
+          </Droppable>
        }
        </ListContext.Provider>
       <AddCardFormComponent idlist={idlist} setCards={setCards}/>

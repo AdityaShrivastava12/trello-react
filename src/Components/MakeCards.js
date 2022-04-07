@@ -12,7 +12,7 @@ export const DescriptionContext = React.createContext();
 export const SetDescriptionContext = React.createContext();
 export const CommentsContext = React.createContext();
 
-function MakeCards({element,cards,setCards,index, handleDragEnter}){
+function MakeCards({element,cards,setCards,index, handleDragEnter,provided}){
   const [enter,setEnter] = useState(false);
   const [cardName, setCardName] = useState(element['name']);
   const [editIconClick, setEditIconClick] = useState(false);
@@ -40,6 +40,7 @@ function MakeCards({element,cards,setCards,index, handleDragEnter}){
     setCardClick(false);
     setEnter(false);
   }
+  
   useEffect(() => {
     async function getDescription(){
       let response = await fetch(`https://api.trello.com/1/cards/${element['id']}?key=${key}&token=${token}&fields=desc`, {
@@ -75,33 +76,18 @@ function MakeCards({element,cards,setCards,index, handleDragEnter}){
     getCheckLists();
   }, [])
 
-  // const handleDragStart = (e) => {
-  //     e.dataTransfer.setData("drag-item", e.target.id);
-  //     // e.dataTransfer.setData("drag-list", listId);
-  //   };
-  //
-  //   function dragEndHandler(e){
-  //     console.log(e)
-  //     if(!e.target.matches('.list-div') &&
-  //         e.target.localName !== 'ul' &&
-  //         e.target.localName !== 'li' &&
-  //         e.taraget.matches('.plus-input')){
-  //       console.log('return');
-  //     }
-  //     e.preventDefault();
-  //     // console.log(cards);
-  //     let id = element['id'];
-  //     let updatedData = cards.filter((elem) => {
-  //       return elem['id'] !== id;
-  //     })
-  //     // console.log(updatedData);
-  //     // console.log(element['id']);
-  //     setCards(updatedData);
-  //   }
-
   return(
-      <li id={element['id']} data-cardpos={element['pos']} className="list-div-li"
-       onMouseEnter={() => setEnter(true)} onMouseLeave={() => setEnter(false)} onClick={cardClickHandler}>
+      <li
+        id={element['id']}
+        data-cardpos={element['pos']}
+        className="list-div-li"
+        onMouseEnter={() => setEnter(true)}
+        onMouseLeave={() => setEnter(false)}
+        onClick={cardClickHandler}
+        {...provided.draggableProps}
+        {...provided.dragHandleProps}
+        ref={provided.innerRef}
+        >
        {
          editIconClick ?
          <EditBox cardName={cardName} setCardName={setCardName} setEditIconClick={setEditIconClick}
@@ -143,3 +129,30 @@ function MakeCards({element,cards,setCards,index, handleDragEnter}){
     )
 }
 export default MakeCards;
+
+
+
+
+// const handleDragStart = (e) => {
+//     e.dataTransfer.setData("drag-item", e.target.id);
+//     // e.dataTransfer.setData("drag-list", listId);
+//   };
+//
+//   function dragEndHandler(e){
+//     console.log(e)
+//     if(!e.target.matches('.list-div') &&
+//         e.target.localName !== 'ul' &&
+//         e.target.localName !== 'li' &&
+//         e.taraget.matches('.plus-input')){
+//       console.log('return');
+//     }
+//     e.preventDefault();
+//     // console.log(cards);
+//     let id = element['id'];
+//     let updatedData = cards.filter((elem) => {
+//       return elem['id'] !== id;
+//     })
+//     // console.log(updatedData);
+//     // console.log(element['id']);
+//     setCards(updatedData);
+//   }

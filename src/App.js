@@ -3,6 +3,7 @@ import React,{useState,useEffect} from 'react';
 // import GetLists from './Components/GetLists'
 import ListDiv from './Components/ListDiv';
 import AddListSection from './Components/AddListSection';
+import {DragDropContext,Droppable,Draggable} from 'react-beautiful-dnd';
 
 export let key = '9b75cc4160800cc67e8dc36b5e621a7b';
 export let token = '3e7247cae91c9003f19d8d85425aefe4f8cf85dd9eba413fdf97ecaa53e76dbe';
@@ -29,21 +30,51 @@ export default function App(){
         // console.log(response)
         setData(response)
       })
+
   },[])
+
+  let array;
+
+  function getCards(arg){
+    array = arg;
+  }
+
+  function handleOnDragEnd(result){
+    console.log(array);
+    // console.log(result);
+    // const items = Array.from(getCards);
+    // const [reorderedItem] = items.splice(result.source.index, 1);
+    // items.splice(result.destination.index, 0, reorderedItem);
+    // let setCards = getSetCards();
+    //
+    // setCards(items);
+  }
+
+  // // function handleOnDragEnd(){};
+  // function callBack(result,handleOnDragEnd){
+  //   handleOnDragEnd(result);
+  // }
 
   return(
     <React.StrictMode>
-    <>
+    <DragDropContext onDragEnd={handleOnDragEnd}>
     {
       data.map((element,index) => {
         return (
-          <ListDiv idlist={element['id']} listname={element['name']}
-          key={element['id']} data={data} setData={setData}  index={index}/>
+          <ListDiv
+            idlist={element['id']}
+            listname={element['name']}
+            key={element['id']}
+            data={data}
+            setData={setData}
+            index={index}
+            getCards={getCards}
+          />
         )
       })
     }
     <AddListSection setData={setData}/>
-    </>
+    </DragDropContext>
     </React.StrictMode>
   )
 }
