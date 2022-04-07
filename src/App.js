@@ -32,6 +32,7 @@ export default function App(){
   },[])
 
   return(
+    <React.StrictMode>
     <>
     {
       data.map((element,index) => {
@@ -43,5 +44,6 @@ export default function App(){
     }
     <AddListSection setData={setData}/>
     </>
+    </React.StrictMode>
   )
 }

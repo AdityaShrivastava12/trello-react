@@ -5,7 +5,7 @@ import ModalDescription from './ModalDescription';
 import ModalChecklist from './ModalChecklist';
 import AddCheckList from './AddCheckList'
 import {CardIdContext} from './MakeCards';
-import {key,token} from './GetLists';
+import {key,token} from '../App.js';
 
 function Modal({setCommentsArray,cards,setCards,setCardClick,checkListArray,setCheckListArray}){
   console.log(checkListArray);

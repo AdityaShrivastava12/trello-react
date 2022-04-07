@@ -1,5 +1,4 @@
 import React,{useState,useEffect} from 'react';
-import GetCards from './GetCards';
 import AddCardFormComponent from './AddCardFormComponent';
 import {DragDropContext,Droppable} from 'react-beautiful-dnd';
 import MakeCards from './MakeCards';
