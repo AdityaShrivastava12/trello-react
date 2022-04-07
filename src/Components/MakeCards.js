@@ -1,6 +1,7 @@
 import React,{useState,useEffect} from 'react';
 import EditBox from './EditBox';
 import Modal from './Modal';
+import {Draggable} from 'react-beautiful-dnd';
 
 let key = '9b75cc4160800cc67e8dc36b5e621a7b';
 let token = '3e7247cae91c9003f19d8d85425aefe4f8cf85dd9eba413fdf97ecaa53e76dbe';
@@ -74,65 +75,71 @@ function MakeCards({element,cards,setCards,index, handleDragEnter}){
     getCheckLists();
   }, [])
 
-  const handleDragStart = (e) => {
-      e.dataTransfer.setData("drag-item", e.target.id);
-      // e.dataTransfer.setData("drag-list", listId);
-    };
-
-    function dragEndHandler(e){
-      e.preventDefault();
-      // console.log(cards);
-      let id = element['id'];
-      let updatedData = cards.filter((elem) => {
-        return elem['id'] !== id;
-      })
-      // console.log(updatedData);
-      // console.log(element['id']);
-      setCards(updatedData);
-    }
+  // const handleDragStart = (e) => {
+  //     e.dataTransfer.setData("drag-item", e.target.id);
+  //     // e.dataTransfer.setData("drag-list", listId);
+  //   };
+  //
+  //   function dragEndHandler(e){
+  //     console.log(e)
+  //     if(!e.target.matches('.list-div') &&
+  //         e.target.localName !== 'ul' &&
+  //         e.target.localName !== 'li' &&
+  //         e.taraget.matches('.plus-input')){
+  //       console.log('return');
+  //     }
+  //     e.preventDefault();
+  //     // console.log(cards);
+  //     let id = element['id'];
+  //     let updatedData = cards.filter((elem) => {
+  //       return elem['id'] !== id;
+  //     })
+  //     // console.log(updatedData);
+  //     // console.log(element['id']);
+  //     setCards(updatedData);
+  //   }
 
   return(
-    <li id={element['id']} data-cardpos={element['pos']} className="list-div-li"
-     onMouseEnter={() => setEnter(true)} onMouseLeave={() => setEnter(false)} onClick={cardClickHandler} draggable
-     onDragStart={handleDragStart} onDragEnd={dragEndHandler}>
-     {
-       editIconClick ?
-       <EditBox cardName={cardName} setCardName={setCardName} setEditIconClick={setEditIconClick}
-        setEnter={setEnter} cardId={element['id']}/>
-       :
-       <>
-       <p>{cardName}</p>
+      <li id={element['id']} data-cardpos={element['pos']} className="list-div-li"
+       onMouseEnter={() => setEnter(true)} onMouseLeave={() => setEnter(false)} onClick={cardClickHandler}>
        {
-         enter ?
-         <i className="fa-solid fa-pen i-edit" onClick={clickHandler}></i>
+         editIconClick ?
+         <EditBox cardName={cardName} setCardName={setCardName} setEditIconClick={setEditIconClick}
+          setEnter={setEnter} cardId={element['id']}/>
          :
-         null
+         <>
+         <p>{cardName}</p>
+         {
+           enter ?
+           <i className="fa-solid fa-pen i-edit" onClick={clickHandler}></i>
+           :
+           null
+         }
+         </>
        }
-       </>
-     }
-     {
-       cardClick ?
-       <>
-       <div className="overlay" id="overlay">
-         <i className="fa-solid fa-xmark fa-xl overlay-cross" id="overlayCross" onClick={overlayCrossClickHandler}></i>
-       </div>
-       <CardNameContext.Provider value={cardName}>
-        <DescriptionContext.Provider value={description}>
-         <SetDescriptionContext.Provider value={setDescription}>
-          <CardIdContext.Provider value={element['id']}>
-           <CommentsContext.Provider value={commentsArray}>
-             <Modal setCommentsArray={setCommentsArray} cards={cards} setCards={setCards} setCardClick={setCardClick}
-              checkListArray={checkListArray} setCheckListArray={setCheckListArray}/>
-           </CommentsContext.Provider>
-          </CardIdContext.Provider>
-         </SetDescriptionContext.Provider>
-        </DescriptionContext.Provider>
-       </CardNameContext.Provider>
-       </>
-       :
-        null
-     }
-    </li>
-  )
+       {
+         cardClick ?
+         <>
+         <div className="overlay" id="overlay">
+           <i className="fa-solid fa-xmark fa-xl overlay-cross" id="overlayCross" onClick={overlayCrossClickHandler}></i>
+         </div>
+         <CardNameContext.Provider value={cardName}>
+          <DescriptionContext.Provider value={description}>
+           <SetDescriptionContext.Provider value={setDescription}>
+            <CardIdContext.Provider value={element['id']}>
+             <CommentsContext.Provider value={commentsArray}>
+               <Modal setCommentsArray={setCommentsArray} cards={cards} setCards={setCards} setCardClick={setCardClick}
+                checkListArray={checkListArray} setCheckListArray={setCheckListArray}/>
+             </CommentsContext.Provider>
+            </CardIdContext.Provider>
+           </SetDescriptionContext.Provider>
+          </DescriptionContext.Provider>
+         </CardNameContext.Provider>
+         </>
+         :
+          null
+       }
+      </li>
+    )
 }
 export default MakeCards;

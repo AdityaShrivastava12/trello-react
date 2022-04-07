@@ -11,14 +11,15 @@ function AddCardFormComponent(props){
     setClick(!clicked)
   }
   const [cardName, setCardName] = useState('');
-  const [cardNameFromButtonClick, setCardNameFromButtonClick] = useState('')
+  const [cardNameFromButtonClick, setCardNameFromButtonClick] = useState('');
+
   function buttonClickHandler(event){
     event.preventDefault();
     setCardNameFromButtonClick(cardName);
   }
   function keyUpHandler(e){
-    //console.log(e);
-    if(e.code === 'Enter'){
+    e.persist();
+    if(e.which === 13){
       e.preventDefault()
       setCardNameFromButtonClick(cardName.trim());
       e.target.value = '';
@@ -51,7 +52,7 @@ function AddCardFormComponent(props){
       clicked ?
       <div className="before-click-textarea" id="afterClickTextArea" data-afterclicktextarea>
         <textarea name="add-card-textarea" onChange={event => setCardName(event.target.value)} id="addCardTextarea" rows="3"
-        className="add-card-text-area" onKeyUp={keyUpHandler} placeholder="Enter a title for this card..." autoFocus></textarea>
+        className="add-card-text-area" onKeyUp = {keyUpHandler} placeholder="Enter a title for this card..." autoFocus></textarea>
         <div className="button-and-cross" id="buttonAndCross">
           <button type="submit" className="add-card-button" id="addCardButton" onClick={buttonClickHandler}>Add Card</button>
           <i className="fa-solid fa-xmark fa-xl form-cross" id="form-cross" onClick={clickHandler}></i>
