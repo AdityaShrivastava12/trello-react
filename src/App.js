@@ -60,68 +60,54 @@ export default function App(){
         console.log(err);
       })
   }
+
   function handleOnDragEnd(result){
     if(!result.destination) return ;
     const {source,destination} = result;
-    if(source.droppableId !== destination.droppableId){
-      // let sourceColumn = data.filter((elem) => {return elem['id'] === source.droppableId})[0];
-      // let destinationColumn = data.filter((elem) => {return elem['id'] === destination.droppableId})[0];
-      // let sourceItems = cards.filter((elem) => {return elem['idList'] === source.droppableId});
-      // let destinationItems = cards.filter((elem) => {return elem['idList'] === destination.droppableId});
-      // console.log(sourceItems);
-      // console.log(destinationItems);
-      // console.log(source.index);
-      // console.log(destination.index);
-      // let [removed] = sourceItems.splice(source.index,1);
-      // destinationItems.splice(destination.index,0,removed);
-      // removed['idList'] = destination.droppableId;
-      // console.log(sourceItems);
-      // console.log(destinationItems);
-      let items = Array.from(cards);
-      let removed = items.splice(source.index,1)[0];
-      // console.log(removed);
-      removed['idList'] = destination.droppableId
+    let prevPos;
+    let nextPos;
+    let items = Array.from(cards);
+    let removed = items.splice(source.index,1)[0];
+
+    if(source.droppableId !== destination.droppableId) {
+      removed['idList'] = destination.droppableId;
       source.index < destination.index ? items.splice(destination.index-1,0,removed) : items.splice(destination.index,0,removed);
-      setCards(items);
-      console.log(items);
-      let index = items.indexOf(removed);
-      console.log(index);
-      let prevPos = items[index-1] ? items[index-1]['pos'] : null;
-      let nextPos = items[index+1] ? items[index+1]['pos'] : null;
-      console.log(prevPos,nextPos);
-      console.log(typeof prevPos);
-      let cardPos;
-      if(!prevPos){
-        cardPos = nextPos/2;
-      }
-      else if(!nextPos){
-        cardPos = prevPos * 2;
-      }
-      else{
-        cardPos = (prevPos + nextPos)/2;
-      }
-      apiCall(removed['id'],destination.droppableId,cardPos);
+    } else {
+      items.splice(destination.index, 0, removed);
     }
-    else{
-      const items = Array.from(cards);
-      const reorderedItem = items.splice(result.source.index, 1)[0];
-      items.splice(result.destination.index, 0, reorderedItem);
-      setCards(items);
-      let index = items.indexOf(reorderedItem);
-      let prevPos = items[index-1] ? items[index-1]['pos'] : null;
-      let nextPos = items[index+1] ? items[index+1]['pos'] : null;
-      let cardPos;
-      if(!prevPos){
-        cardPos = nextPos/2;
-      }
-      else if(!nextPos){
-        cardPos = prevPos * 2;
-      }
-      else{
-        cardPos = (prevPos + nextPos)/2;
-      }
-      apiCall(reorderedItem['id'],destination.droppableId,cardPos);
+
+    let destinationItems = items.filter((elem) => {return elem['idList'] === destination.droppableId});
+    console.log(destinationItems);
+
+    let index = destinationItems.indexOf(removed);
+    console.log(index);
+    console.log(destinationItems[index]);
+    console.log(destinationItems[index-1]);
+    console.log(destinationItems[index+1]);
+    prevPos = destinationItems[index-1] ? destinationItems[index-1]['pos'] : null;
+    nextPos = destinationItems[index+1] ? destinationItems[index+1]['pos'] : null;
+    console.log(prevPos,nextPos);
+    // console.log(source.index,destination.index);
+    let cardPos;
+
+    if(!prevPos && nextPos){
+      cardPos = nextPos/2;
+    } else if(!nextPos && prevPos){
+      cardPos = prevPos * 2;
+    } else if(!prevPos && !nextPos){
+      cardPos = 'top';
+    } else{
+      cardPos = (prevPos + nextPos)/2;
     }
+
+    let finalIndex = items.indexOf(removed);
+    console.log(finalIndex);
+    if(typeof cardPos === 'number'){
+      items[finalIndex]['pos'] = cardPos;
+    }
+    setCards(items);
+
+    apiCall(removed['id'],destination.droppableId,cardPos);
   }
 
   return(
@@ -148,3 +134,18 @@ export default function App(){
     </React.StrictMode>
   )
 }
+
+
+// let sourceColumn = data.filter((elem) => {return elem['id'] === source.droppableId})[0];
+// let destinationColumn = data.filter((elem) => {return elem['id'] === destination.droppableId})[0];
+// let sourceItems = cards.filter((elem) => {return elem['idList'] === source.droppableId});
+// let destinationItems = cards.filter((elem) => {return elem['idList'] === destination.droppableId});
+// console.log(sourceItems);
+// console.log(destinationItems);
+// console.log(source.index);
+// console.log(destination.index);
+// let [removed] = sourceItems.splice(source.index,1);
+// destinationItems.splice(destination.index,0,removed);
+// removed['idList'] = destination.droppableId;
+// console.log(sourceItems);
+// console.log(destinationItems);
